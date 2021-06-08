@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class MainManager : MonoBehaviour
 {
@@ -11,17 +12,23 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text highScoreText;
+    public TMP_Text playerMessage;
     public GameObject GameOverText;
-    
     private bool m_Started = false;
     private int m_Points;
     
     private bool m_GameOver = false;
-
     
     // Start is called before the first frame update
     void Start()
     {
+        if (ScoreManager.Instance != null)
+        {
+            UpdateScoreText();
+            UpdateHighScoreText();
+        }
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -66,6 +73,13 @@ public class MainManager : MonoBehaviour
     {
         m_Points += point;
         ScoreText.text = $"Score : {m_Points}";
+
+        if ((ScoreManager.Instance != null) && (m_Points > ScoreManager.Instance.highScore))
+        {
+            playerMessage.text = "HOLY MOLY, " + ScoreManager.Instance.playerName + "! NEW BEST!!!";
+            ScoreManager.Instance.UpdateHighScore(m_Points);
+            UpdateHighScoreText();
+        }
     }
 
     public void GameOver()
@@ -73,4 +87,15 @@ public class MainManager : MonoBehaviour
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
+
+    public void UpdateScoreText()
+    {
+        playerMessage.text = "You're doing great, " + ScoreManager.Instance.playerName;
+    }
+
+    public void UpdateHighScoreText()
+    {
+        highScoreText.text = "SCORE: " + ScoreManager.Instance.highScore + "  |  PLAYER: " + ScoreManager.Instance.highScorePlayerName;
+    }
+
 }
