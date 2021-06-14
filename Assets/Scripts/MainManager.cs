@@ -14,12 +14,15 @@ public class MainManager : MonoBehaviour
     public Text ScoreText;
     public Text highScoreText;
     public TMP_Text playerMessage;
+    public TMP_Text ScoresNameText;
+    public TMP_Text ScoresScoreText;
     public GameObject GameOverText;
     private bool m_Started = false;
     private int m_Points;
     
     private bool m_GameOver = false;
-    
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -73,19 +76,27 @@ public class MainManager : MonoBehaviour
     {
         m_Points += point;
         ScoreText.text = $"Score : {m_Points}";
-
-        if ((ScoreManager.Instance != null) && (m_Points > ScoreManager.Instance.highScore))
+        
+        if (ScoreManager.Instance != null)
         {
-            playerMessage.text = "HOLY MOLY, " + ScoreManager.Instance.playerName + "! NEW BEST!!!";
-            ScoreManager.Instance.UpdateHighScore(m_Points);
-            UpdateHighScoreText();
+            ScoreManager.Instance.UpdateHighScores(m_Points);
+
+            if (m_Points >= ScoreManager.Instance.highScore)
+            {
+                UpdateHighScoreText();
+            }
         }
     }
 
     public void GameOver()
     {
+        ScoreManager.Instance.SaveHighScore(m_Points);
+        ScoreManager.Instance.DisplayGameOverScores();
         m_GameOver = true;
         GameOverText.SetActive(true);
+
+        ScoresNameText.enabled = true;
+        ScoresScoreText.enabled = true;
     }
 
     public void UpdateScoreText()
